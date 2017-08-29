@@ -145,6 +145,9 @@
 	</div><!-- /.modal -->
 	<div id="loading">加载中...</div>
 	<script>
+		function bindDeleteButton(commentId){
+			
+		}
 		$("h1").click(function(){
 			$("header a").toggle();
 		});
@@ -152,35 +155,44 @@
 			$('#myModal').modal('hide');
 			alert('登陆成功！');
 			$("li a").show();
+			$("header a").hide();
+			$("h1").unbind('click');
+			$.cookie("isAdmin","true");
 		}else alert("管理员密码错误！");});
 		var tpl = $("#tpl").html();
 		var template = Handlebars.compile(tpl);
 		$("#loading").show();
-		$.get("http://wzy88665.gotoip55.com/commentarea/required.php",{},function(data){
+		$.get("commentApi.php",{},function(data){
+		// $.get("http://wzy88665.gotoip55.com/commentarea/required.php",{},function(data){
 			for(i = 0;i<JSON.parse(data).length;i++){
 				var newDate = new Date();
-				newDate.setTime(JSON.parse(data)[i][3]);
+				newDate.setTime(JSON.parse(data)[i][3]*1000);
 				var html = template({
 					id:JSON.parse(data)[i][0],
 					name:JSON.parse(data)[i][1],
 					msg:JSON.parse(data)[i][2],
 					time:newDate.toLocaleString()
 				});
-				$("ul").prepend(html);
+				$("ul").append(html);
+			}
+			if($.cookie("isAdmin")=='true'){
+				$("li a").show();
+				$("h1").unbind('click');
 			}
 			$("#loading").hide();
 		});
 		$("#submit").click(function(){
-			if(!$("#common").val()){
+			if(!$("#msg").val()){
 				alert("评论不能为空！");
 				return false;
 			}
-			$.post("http://wzy88665.gotoip55.com/commentarea/common.php",{
-				'username' : $("#username").val() || '未署名用户',
-				'common' : $("#common").val()
+			$.post("commentApi.php",{
+			// $.post("http://wzy88665.gotoip55.com/commentarea/common.php",{
+				'username' : $("#name").val() || '未署名用户',
+				'common' : $("#msg").val()
 			},function(data){
-				console.log(data);
-			}
+				window.location.reload();
+			});
 		});
 	</script>
 </body>
