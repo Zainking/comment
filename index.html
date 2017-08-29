@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+	<meta charset="UTF-8">
+	<title>十条</title>
+	<meta name="viewport" content="width=320.1,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,minimal-ui" />
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdn.bootcss.com/handlebars.js/4.0.10/handlebars.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+	<style>
+		body{
+			background-color: #eee;
+		}
+		header{
+			background-color: #FFA500;
+			text-align: center;
+			margin-bottom: 10px;
+		}
+		header a{
+			color:#fff;
+			display: none;
+		}
+		h1{
+			color:white;
+			text-align: center;
+			font-size: 1.5em;
+			line-height: 1.5em;
+			cursor: pointer;
+			margin:0;
+		}
+		.btn-default{
+			background-color: #fff;
+		}
+		footer{
+			text-align: center;
+		}
+		#main{
+			max-width: 640px;
+			width: 100%;
+			margin:0 auto;
+		}
+		#input{
+			background-color: #fff;
+			border-right: 2px solid #888;
+			border-bottom: 2px solid #888;
+			border-radius: 5px;
+
+		}
+		#name,#msg,#submit{
+			width: 90%;
+			position: relative;
+			margin:5px;
+			left:5%;
+
+		}
+		ul{
+			list-style: none;
+			padding-left: 0;
+		}
+		ul li{
+			background-color: #fff;
+			border-right: 2px solid #888;
+			border-bottom: 2px solid #888;
+			border-radius: 5px;
+			margin:5px 0;
+			padding:10px;
+			overflow:auto;
+		}
+		span{
+			float: right;
+			font-size: 0.8em;
+			color: #ccc;
+		}
+		#loading{
+			background-color: rgba(0,0,0,0.5);
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			top:0;
+			color:#fff;
+			line-height: 100%;
+			z-index: 2000;
+			padding-top: 50px;
+			display: none;
+		}
+		.modal-body{
+			text-align: center;
+		}
+		li a{
+			color:#F00;
+			font-size: 0.8em;
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<header><h1>十条</h1><a href="#" data-toggle="modal" data-target="#myModal">[管理员登录]</a></header>
+	<div id="main">
+		<div id="input">
+			<input id="name" type="text" placeholder="请输入您的昵称，默认为‘未署名用户’">
+			<textarea name="text" id="msg" cols="30" rows="5" placeholder="在这里输入您的留言，旧于10条的留言将被销毁。"></textarea>
+			<button id="submit" class="btn btn-success">提交</button>
+		</div>
+		<ul>
+		<script id="tpl" type="text/x-handlebars-template">  
+			<li commentID="{{id}}"><strong>{{name}}</strong><br>{{msg}}<br><a href="#" data-toggle="modal" data-target="#delete">删除</a><span>{{time}}</span></li>
+		</script>  
+		</ul>
+	</div>
+	<footer>2017&copy;</footer>
+	<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">管理员登录</h4>
+	      </div>
+	      <div class="modal-body">
+	        <label for="password">管理员密码</label>
+	        <input id="password" type="password">
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	        <button id="login" type="button" class="btn btn-primary">登录</button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	<div class="modal fade" tabindex="-1" role="dialog" id="delete">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">删除留言</h4>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	        <button id="delete" type="button" class="btn btn-danger">删除</button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	<div id="loading">加载中...</div>
+	<script>
+		$("h1").click(function(){
+			$("header a").toggle();
+		});
+		$("#login").click(function(){if($("#password").val() == '61457155'){
+			$('#myModal').modal('hide');
+			alert('登陆成功！');
+			$("li a").show();
+		}else alert("管理员密码错误！");});
+		var tpl = $("#tpl").html();
+		var template = Handlebars.compile(tpl);
+		$("#loading").show();
+		$.get("http://wzy88665.gotoip55.com/commentarea/required.php",{},function(data){
+			for(i = 0;i<JSON.parse(data).length;i++){
+				var newDate = new Date();
+				newDate.setTime(JSON.parse(data)[i][3]);
+				var html = template({
+					id:JSON.parse(data)[i][0],
+					name:JSON.parse(data)[i][1],
+					msg:JSON.parse(data)[i][2],
+					time:newDate.toLocaleString()
+				});
+				$("ul").prepend(html);
+			}
+			$("#loading").hide();
+		});
+		$("#submit").click(function(){
+			if(!$("#common").val()){
+				alert("评论不能为空！");
+				return false;
+			}
+			$.post("http://wzy88665.gotoip55.com/commentarea/common.php",{
+				'username' : $("#username").val() || '未署名用户',
+				'common' : $("#common").val()
+			},function(data){
+				console.log(data);
+			}
+		});
+	</script>
+</body>
+</html>
