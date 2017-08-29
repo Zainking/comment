@@ -162,8 +162,7 @@
 		var tpl = $("#tpl").html();
 		var template = Handlebars.compile(tpl);
 		$("#loading").show();
-		$.get("commentApi.php",{},function(data){
-		// $.get("http://wzy88665.gotoip55.com/commentarea/required.php",{},function(data){
+		$.get("http://wzy88665.gotoip55.com/commentApi/commentApi.php",{},function(data){
 			for(i = 0;i<JSON.parse(data).length;i++){
 				var newDate = new Date();
 				newDate.setTime(JSON.parse(data)[i][3]*1000);
@@ -186,8 +185,7 @@
 				alert("评论不能为空！");
 				return false;
 			}
-			$.post("commentApi.php",{
-			// $.post("http://wzy88665.gotoip55.com/commentarea/common.php",{
+			$.post("http://wzy88665.gotoip55.com/commentApi/commentApi.php",{
 				'username' : $("#name").val() || '未署名用户',
 				'common' : $("#msg").val()
 			},function(data){
