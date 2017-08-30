@@ -1,12 +1,13 @@
 <?php
 	header("Content-Type: text/html;charset=utf-8"); 
+	header('Access-Control-Allow-Origin:http://comment.zain.red/');
+	header('Access-Control-Allow-Methods:GET, POST, PUT, DELETE, OPTIONS');
 	$mysqli = new mysqli('wzy88665.gotoftp5.com','wzy88665','61457155','wzy88665');
 	if($mysqli->errno > 0){
 		echo "Error!";
 		echo $mysqli->errno;
 		exit;
 	}
-	header('Access-Control-Allow-Origin:*');
 	if($_SERVER['REQUEST_METHOD']=="GET"){
 		$query = 'SELECT id, username, comment, time FROM commentarea_comment ORDER by id DESC LIMIT 10';
 		$result = $mysqli->query($query);
