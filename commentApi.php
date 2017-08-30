@@ -24,4 +24,9 @@
 		$res = array('id'=>mysqli_insert_id($mysqli),'time'=>$time);
 
 		echo json_encode($res);
+	}else if($_SERVER['REQUEST_METHOD']=="DELETE"){
+		$id = explode('?',$_SERVER['REQUEST_URI'])[1];
+		$query = "DELETE FROM commentarea_comment WHERE id = '{$id}' ";
+		$result = $mysqli->query($query);
+		echo $id.json_encode($result);
 	}

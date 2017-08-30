@@ -106,7 +106,7 @@
 		</div>
 		<ul>
 		<script id="tpl" type="text/x-handlebars-template">  
-			<li commentID="{{id}}"><strong>{{name}}</strong><br>{{msg}}<br><a href="#" data-toggle="modal" data-target="#delete">删除</a><span>{{time}}</span></li>
+			<li commentID="{{id}}"><strong>{{name}}</strong><br>{{msg}}<br><a href="#" data-toggle="modal" data-target="#deletemodal">删除</a><span>{{time}}</span></li>
 		</script>  
 		</ul>
 	</div>
@@ -129,7 +129,7 @@
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
-	<div class="modal fade" tabindex="-1" role="dialog" id="delete">
+	<div class="modal fade" tabindex="-1" role="dialog" id="deletemodal">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
@@ -137,17 +137,34 @@
 	        <h4 class="modal-title">删除留言</h4>
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-	        <button id="delete" type="button" class="btn btn-danger">删除</button>
+	        <button type="button" class="btn btn-default" id="close">关闭</button>
+	        <button id="deletetrue" type="button" class="btn btn-danger">删除</button>
 	      </div>
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 	<div id="loading">加载中...</div>
 	<script>
+		var __DELETEID = -1;
 		function bindDeleteButton(commentId){
-			
+			$("li[commentID='" + commentId + "'] a").click(function(){
+				__DELETEID = commentId;
+			});
 		}
+		$("#close").click(function(){
+			$('#deletemodal').modal('hide');
+		});
+		$("#deletetrue").click(function(){
+			$("#loading").show();
+			$.ajax({
+			    url: 'commentApi.php?'+__DELETEID,
+			    type: 'DELETE',
+			    success: function(result) {
+			    	$("#loading").hide();
+			        window.location.reload();
+			    }
+			});
+		});
 		$("h1").click(function(){
 			$("header a").toggle();
 		});
@@ -173,6 +190,7 @@
 					time:newDate.toLocaleString()
 				});
 				$("ul").append(html);
+				bindDeleteButton(JSON.parse(data)[i][0]);
 			}
 			if($.cookie("isAdmin")=='true'){
 				$("li a").show();
@@ -185,10 +203,12 @@
 				alert("评论不能为空！");
 				return false;
 			}
+			$("#loading").show();
 			$.post("http://wzy88665.gotoip55.com/commentApi/commentApi.php",{
 				'username' : $("#name").val() || '未署名用户',
 				'common' : $("#msg").val()
 			},function(data){
+				$("#loading").hide();
 				window.location.reload();
 			});
 		});
