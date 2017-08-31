@@ -156,13 +156,9 @@
 		});
 		$("#deletetrue").click(function(){
 			$("#loading").show();
-			$.ajax({
-			    url: 'http://wzy88665.gotoip55.com/commentApi/commentApi.php?'+__DELETEID,
-			    type: 'DELETE',
-			    success: function(result) {
-			    	$("#loading").hide();
-			        window.location.reload();
-			    }
+			$.post("http://wzy88665.gotoip55.com/commentApi/commentDelApi.php",{id:__DELETEID},function(){
+				$("#loading").hide();
+			    window.location.reload();
 			});
 		});
 		$("h1").click(function(){
