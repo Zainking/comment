@@ -156,7 +156,7 @@
 		});
 		$("#deletetrue").click(function(){
 			$("#loading").show();
-			$.post("http://wzy88665.gotoip55.com/commentApi/commentDelApi.php",{id:__DELETEID},function(){
+			$.post("https://php.zain.red/commentApi/commentDelApi.php",{id:__DELETEID},function(){
 				$("#loading").hide();
 			    window.location.reload();
 			});
@@ -175,7 +175,7 @@
 		var tpl = $("#tpl").html();
 		var template = Handlebars.compile(tpl);
 		$("#loading").show();
-		$.get("http://wzy88665.gotoip55.com/commentApi/commentApi.php",{},function(data){
+		$.get("https://php.zain.red/commentApi/commentApi.php",{},function(data){
 			for(i = 0;i<JSON.parse(data).length;i++){
 				var newDate = new Date();
 				newDate.setTime(JSON.parse(data)[i][3]*1000);
@@ -200,7 +200,7 @@
 				return false;
 			}
 			$("#loading").show();
-			$.post("http://wzy88665.gotoip55.com/commentApi/commentApi.php",{
+			$.post("https://php.zain.red/commentApi/commentApi.php",{
 				'username' : $("#name").val() || '未署名用户',
 				'common' : $("#msg").val()
 			},function(data){
